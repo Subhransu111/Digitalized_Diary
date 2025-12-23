@@ -51,7 +51,37 @@ async function getCases(req,res) {
     }
 };
 
+async function updateCaseStatus(req,res){
+    try{
+        const {id} = req.params;
+        const {caseStatus} = req.body;
+        const updatedCase = await Case.findByIdAndUpdate(
+            id,
+            {caseStatus},
+            {new:true}
+        );
+        if(!updatedCase){
+            return res.status(404).json({
+                success:false,
+                message:"Case not found",
+            });
+        }
+        return res.status(200).json({
+            success:true,
+            message:"Case status updated successfully",
+            data:updatedCase,
+        });
+    }
+    catch(error){
+        return res.status(500).json({
+            success:false,
+            error:error.message,
+        });
+    }
+};
+
 module.exports = {
     createCase,
     getCases,
+    updateCaseStatus,
 };
