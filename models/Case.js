@@ -16,7 +16,7 @@ const caseSchema = new mongoose.Schema({
         type:String,
         default:"Open",
     },
-    created_by:{
+    createdBy:{
         type:String,
     },
     
