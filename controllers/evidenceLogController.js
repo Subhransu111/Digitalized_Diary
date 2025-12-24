@@ -1,20 +1,41 @@
 const EvidenceLog = require('../models/Evidence_log');
-
+const QrCode = require('qrcode');
+const fs = require('fs');
+const { time } = require('console');
 // Create a new Evidence Log
 async function createEvidenceLog(req,res){
     try{
         const {caseId , description, evidenceType, loggedBy} = req.body;
+
+        // Validate required fields
         if(!caseId || !description || !evidenceType){
             return res.status(400).json({
                 success: false,
                 message: "caseId, description and evidenceType are required",
             });
         };
+
+        const filePath = req.file ? req.file.path : null;
+
+        //Generate QR Code for the evidence log
+        const qrData = JSON.stringify({
+            caseId: caseId,
+            description: description,
+            evidenceType: evidenceType,
+            loggedBy: loggedBy,
+            timeStamp: new Date().toISOString(),
+        })
+
+        //Generate QR code image and save to file system
+        const qrCodeImage = await QrCode.toDataURL(qrData);
+
         const newEvidenceLog = await EvidenceLog.create({
             caseId,
             description,
             evidenceType,
             loggedBy, //req.user.sub // Auth0 user
+            documentPath: filePath,
+            qrCode : qrCodeImage,
         });
         return res.status(201).json({
             success: true,

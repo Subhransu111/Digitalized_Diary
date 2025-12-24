@@ -2,8 +2,8 @@ const cron = require('node-cron');
 const Case = require('./../models/Case');
 
 const initCronJobs = () => {
-    // This tells it to run every single minute!
-    cron.schedule('* * * * *', async () => {
+    
+    cron.schedule('0 10 */2 * *', async () => {
         console.log("Running Pendency Check..."); 
 
         try {

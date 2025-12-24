@@ -11,6 +11,12 @@ const evidenceLogSchema = new mongoose.Schema({
     description:{
         type:String,
     },
+    documentPath:{
+        type:String,
+    },
+    qrCode:{
+        type:String,
+    },
     loggedBy:{
         type:String,
     },
