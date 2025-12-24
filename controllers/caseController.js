@@ -51,6 +51,25 @@ async function getCases(req,res) {
     }
 };
 
+// Get Case by id
+async function getCaseById(req,res) {
+    try{
+        const caseId = req.params.id;
+        const caseData = await Case.find({_id: caseId});
+        return res.status(200).json({
+            success: true,
+            data: caseData,
+        });
+    } catch (error){
+        return res.status(500).json({
+            success: false,
+            error: error.message,
+        });
+    }
+
+
+}
+
 async function updateCaseStatus(req,res){
     try{
         const {id} = req.params;
@@ -83,5 +102,6 @@ async function updateCaseStatus(req,res){
 module.exports = {
     createCase,
     getCases,
+    getCaseById,
     updateCaseStatus,
 };

@@ -4,8 +4,8 @@ const Case = require('../models/Case');
 async function getCaseStatistics(req,res){
     try{
         const totalcases = await Case.countDocuments();
-        const pendingcases = await Case.countDocuments({caseStatus:'open'});
-        const closedcases = await Case.countDocuments({caseStatus:'closed'});
+        const pendingcases = await Case.countDocuments({caseStatus: {$regex: '^open$', $options: 'i'}});
+        const closedcases = await Case.countDocuments({caseStatus: {$regex: '^closed$', $options: 'i'}});
 
         return res.status(200).json({
             success:true,
@@ -32,11 +32,14 @@ async function getCaseStatistics(req,res){
 
     async function getFIRtoChargeSheetTimeline(req,res){
         try{
-            const closedCases = await Case.find({caseStatus:'closed'}).select('caseNumber,caseTitle, createdAt, updatedAt');
+            // Find closed cases - case insensitive query
+            const closedCases = await Case.find({caseStatus: "Closed"}).select('caseNumber caseTitle createdAt updatedAt');
 
             const timelineData = closedCases.map(c=>{
+                if(!c.createdAt || !c.updatedAt) return null;
                 const start = c.createdAt;
                 const end = c.updatedAt;
+                if (isNaN(start) || isNaN(end)) return null;
                 const duration = Math.abs(end-start);
                 const daysTaken = Math.ceil(duration/(1000*60*60*24));
                 return {
@@ -45,8 +48,10 @@ async function getCaseStatistics(req,res){
                     daysTaken: daysTaken,
                     startDate: start.toISOString().split('T')[0],
                     endDate: end.toISOString().split('T')[0]
-            }
-            });
+            };
+            })
+            .filter(item => item !== null);
+
                  return res.status(200).json({
                     success:true,
                     data: timelineData,
