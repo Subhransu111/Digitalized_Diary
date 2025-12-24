@@ -1,4 +1,4 @@
-const Case = require('../models/case');
+const Case = require('../models/Case');
 
 // Cretae a new Case
 async function createCase(req, res) {
