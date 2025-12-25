@@ -7,12 +7,14 @@ async function getCaseStatistics(req,res){
         const pendingcases = await Case.countDocuments({caseStatus: {$regex: '^open$', $options: 'i'}});
         const closedcases = await Case.countDocuments({caseStatus: {$regex: '^closed$', $options: 'i'}});
 
+        console.log("Analytics Sent:",{totalcases, pendingcases, closedcases});
+
         return res.status(200).json({
             success:true,
             data:{
-                TotalCases: totalcases,
-                Pending: pendingcases,
-                Closed: closedcases,
+                totalCases: totalcases,
+                pendingCount: pendingcases,
+                closedCount: closedcases,
                 pendencyRate: totalcases > 0 ? ((pendingcases / totalcases) * 100).toFixed(2) + '%' : '0%',
             },
 

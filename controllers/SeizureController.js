@@ -3,7 +3,7 @@ const Seizure = require('../models/Seizure');
 // Create a new Seizure
 async function createSeizure(req,res){
     try{
-        const {caseId , itemDescription, quantity, locationSeized,seizedBy} = req.body;
+        const {caseId , itemDescription, quantity, locationSeized} = req.body;
         if(!caseId || !itemDescription || !quantity || !locationSeized){
             return res.status(400).json({
                 success: false,
@@ -16,7 +16,7 @@ async function createSeizure(req,res){
             itemDescription,
             quantity,
             locationSeized,
-            seizedBy, //req.user.sub // Auth0 user
+            seizedBy:req.auth.payload.sub, //req.user.sub // Auth0 user
         });
         return res.status(201).json({
             success: true,

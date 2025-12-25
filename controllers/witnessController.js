@@ -3,7 +3,7 @@ const witness = require('../models/Witness_Statement');
 // Create a new Witness Statement
 async function createwitnessStatement (req,res){
     try{
-        const {caseId , witnessName,witnessContact, statement, recordedBy} = req.body;
+        const {caseId , witnessName,witnessContact, statement} = req.body;
 
         if(!caseId || !witnessName || !statement){
             return res.status(400).json({
@@ -16,7 +16,7 @@ async function createwitnessStatement (req,res){
             witnessName,
             witnessContact,
             statement,
-            recordedBy, //req.user.sub // Auth0 user
+            recordedBy: req.auth.payload.sub, //req.user.sub // Auth0 user
         });
         return res.status(201).json({
             success: true,
@@ -41,7 +41,7 @@ async function getWitnessByCase(req, res) {
             caseId: req.params.caseId
             })
         .sort({ createdAt: 1})
-        
+
         return res.status(200).json({
             success:true,
             message:"Witness statements have been retrieved",

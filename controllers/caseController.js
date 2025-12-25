@@ -3,7 +3,7 @@ const Case = require('../models/Case');
 // Cretae a new Case
 async function createCase(req, res) {
     try{
-        const {caseNumber, caseTitle, caseDescription, caseStatus,createdBy} = req.body;
+        const {caseNumber, caseTitle, caseDescription, caseStatus} = req.body;
         if (!caseNumber || !caseTitle) {
             return res.status(400).json({
                 success: false,
@@ -15,7 +15,7 @@ async function createCase(req, res) {
             caseTitle,
             caseDescription,
             caseStatus,
-            createdBy,
+            createdBy: req.auth.payload.sub,
         });
         return res.status(201).json({
             success: true,

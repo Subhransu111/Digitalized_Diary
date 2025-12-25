@@ -33,7 +33,7 @@ const validateFileSignature = (filePath)=>{
 // Create a new Evidence Log
 async function createEvidenceLog(req,res){
     try{
-        const {caseId , description, evidenceType, loggedBy} = req.body;
+        const {caseId , description, evidenceType} = req.body;
 
         // Validate file signature if file is uploaded
         if (req.file){
@@ -62,7 +62,7 @@ async function createEvidenceLog(req,res){
             caseId: caseId,
             description: description,
             evidenceType: evidenceType,
-            loggedBy: loggedBy,
+            loggedBy: req.auth.payload.sub,
             timeStamp: new Date().toISOString(),
         })
 

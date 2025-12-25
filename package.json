@@ -10,7 +10,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^5.2.1",
+    "express-oauth2-jwt-bearer": "^1.7.2",
     "mongoose": "^9.0.2",
     "multer": "^2.0.2",
     "node-cron": "^4.2.1",

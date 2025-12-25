@@ -3,7 +3,7 @@ const CaseFact = require('../models/Case_fact');
 // Create a new Case Fact
 async function createCaseFact(req,res){
     try{
-        const {caseId , factType, factDescription,reportedBy} = req.body;
+        const {caseId , factType, factDescription} = req.body;
 
         if(!caseId || !factType ){
             return res.status(400).json({
@@ -16,7 +16,7 @@ async function createCaseFact(req,res){
             caseId,
             factType,
             factDescription,
-            reportedBy, //req.user.sub // Auth0 user
+            reportedBy:req.auth.payload.sub, //req.user.sub // Auth0 user
         });
         return res.status(201).json({
             success: true,
