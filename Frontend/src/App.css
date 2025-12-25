@@ -93,6 +93,21 @@ body {
   color: white;
 }
 
+/* --- Witness Section Styling --- */
+.witness-card-row {
+  background-color: #f8fafc;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 15px;
+}
+
+.witness-divider {
+  border: 0;
+  border-top: 1px dashed #cbd5e1;
+  margin: 20px 0;
+}
+
 /* --- The Dropdown Menu (Vertical Box) --- */
 .dropdown-menu {
   position: absolute;

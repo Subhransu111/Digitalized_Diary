@@ -18,7 +18,7 @@ const CreateCase = () => {
   });
 
   const [witnesses, setWitnesses] = useState([
-    { witnessName: '', witnessContact: '', statement: '' }
+    { witnessName: '', phone: '',email: '', address: '', statement: '' }
   ]);
 
   // FIXED: Names now match Seizure.js Model exactly
@@ -89,7 +89,19 @@ const CreateCase = () => {
 
       // Step B: Witnesses
       witnesses.forEach(w => {
-        if (w.witnessName) promises.push(api.post('/witnesses', { ...w, caseId: newCaseId }));
+        if (w.witnessName) {
+            const witnesspayload = {
+                caseId: newCaseId,
+                witnessName: w.witnessName,
+                statement: w.statement,
+                witnessContact: { // <--- This creates the Object structure
+              phone: w.phone,
+              email: w.email,
+              address: w.address
+            }
+        };
+         promises.push(api.post('/witnesses', witnesspayload));
+    }
       });
 
       // Step C: Seizures (Fixed Field Names)
@@ -182,18 +194,45 @@ const CreateCase = () => {
             </div>
           </div>
 
-          {/* 2. Witnesses */}
+          {/* --- Section 2: Witnesses (EXPANDED) --- */}
           <div className="clean-section">
             <div className="section-header-clean">
               <h3 className="section-title">Witnesses</h3>
-              <button type="button" onClick={() => addRow(witnesses, setWitnesses, {witnessName:'', witnessContact:'', statement:''})} className="clean-add-btn">+ Add Witness</button>
+              <button type="button" onClick={() => addRow(witnesses, setWitnesses, {witnessName:'', phone:'', email:'', address:'', statement:''})} className="clean-add-btn">+ Add Witness</button>
             </div>
             {witnesses.map((w, index) => (
-              <div key={index} className="row dynamic-row">
-                <div className="input-group flex-1"><input name="witnessName" value={w.witnessName} onChange={(e) => handleGenericChange(index, e, witnesses, setWitnesses)} placeholder="Full Name" /></div>
-                <div className="input-group flex-1"><input name="witnessContact" value={w.witnessContact} onChange={(e) => handleGenericChange(index, e, witnesses, setWitnesses)} placeholder="Contact" /></div>
-                <div className="input-group flex-2"><input name="statement" value={w.statement} onChange={(e) => handleGenericChange(index, e, witnesses, setWitnesses)} placeholder="Statement" /></div>
-                {witnesses.length > 1 && <button type="button" onClick={() => removeRow(index, witnesses, setWitnesses)} className="clean-remove-btn">×</button>}
+              <div key={index} className="witness-card-row"> {/* New CSS Class below */}
+                
+                {/* Row 1: Basic Info */}
+                <div className="row">
+                  <div className="input-group flex-1">
+                    <input name="witnessName" value={w.witnessName} onChange={(e) => handleGenericChange(index, e, witnesses, setWitnesses)} placeholder="Full Name" />
+                  </div>
+                  <div className="input-group flex-1">
+                    <input name="phone" value={w.phone} onChange={(e) => handleGenericChange(index, e, witnesses, setWitnesses)} placeholder="Phone Number" />
+                  </div>
+                  <div className="input-group flex-1">
+                    <input name="email" value={w.email} onChange={(e) => handleGenericChange(index, e, witnesses, setWitnesses)} placeholder="Email Address" />
+                  </div>
+                </div>
+
+                {/* Row 2: Address & Statement */}
+                <div className="row">
+                  <div className="input-group flex-1">
+                    <input name="address" value={w.address} onChange={(e) => handleGenericChange(index, e, witnesses, setWitnesses)} placeholder="Physical Address" />
+                  </div>
+                  <div className="input-group flex-2">
+                    <input name="statement" value={w.statement} onChange={(e) => handleGenericChange(index, e, witnesses, setWitnesses)} placeholder="Witness Statement" />
+                  </div>
+                  
+                  {/* Remove Button */}
+                  {witnesses.length > 1 && (
+                    <button type="button" onClick={() => removeRow(index, witnesses, setWitnesses)} className="clean-remove-btn">×</button>
+                  )}
+                </div>
+                
+                {/* Visual Separator for multiple witnesses */}
+                {index < witnesses.length - 1 && <hr className="witness-divider"/>}
               </div>
             ))}
           </div>
