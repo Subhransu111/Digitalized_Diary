@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard'; // Import Dashboard
 import './App.css';
+import CreateCase from './pages/CreateCase';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -33,7 +34,17 @@ function App() {
               </ProtectedRoute>
             } 
           />
+          <Route 
+            path="/create-case" 
+            element={
+              <ProtectedRoute>
+                <CreateCase />
+              </ProtectedRoute>
+            } 
+          />
         </Routes>
+        
+
       </div>
     </Router>
   );

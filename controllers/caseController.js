@@ -15,7 +15,7 @@ async function createCase(req, res) {
             caseTitle,
             caseDescription,
             caseStatus,
-            createdBy: req.auth.payload.sub,
+            created_by: req.body.createdBy || 'System',
         });
         return res.status(201).json({
             success: true,
