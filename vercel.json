@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index.js" },
+    { "source": "/(.*)", "destination": "/Frontend/index.html" }
+  ],
+  "buildCommand": "cd Frontend && npm install && npm run build",
+  "outputDirectory": "Frontend/dist"
+}
