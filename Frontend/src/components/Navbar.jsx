@@ -10,7 +10,7 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-brand">
-        <h1>Cyber Diary</h1>
+        <h1>CYBER DIARY</h1>
       </div>
       
       <div className="navbar-links">
@@ -59,12 +59,7 @@ const Navbar = () => {
             >
               Login
             </button>
-            <button 
-              onClick={() => loginWithRedirect({ screen_hint: 'signup' })} 
-              className="nav-btn signup-btn"
-            >
-              Sign Up
-            </button>
+          
           </>
         ) : (
           <div style={{display: 'flex', gap: '15px', alignItems: 'center'}}>
