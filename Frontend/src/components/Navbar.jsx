@@ -39,7 +39,6 @@ const Navbar = () => {
 
       {/* Future View Features */}
       <Link to="/cases" className="dropdown-item">📂 View All Cases</Link>
-      <Link to="/evidence" className="dropdown-item">📎 Evidence Locker</Link>
       <Link to="/analytics" className="dropdown-item">📊 Reports</Link>
     </div>
             )}

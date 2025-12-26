@@ -54,12 +54,13 @@ body {
 }
 
 .login-btn {
+  background-color: #0ea5e9;
   color: white;
-  border: 1px solid rgba(255,255,255,0.3);
+  font-weight: bold;
 }
 
 .login-btn:hover {
-  background-color: rgba(255,255,255,0.1);
+  background-color: #0284c7;
 }
 
 .signup-btn {
@@ -251,6 +252,107 @@ body {
   margin-bottom: 20px;
   border-bottom: 1px solid #f1f5f9;
   padding-bottom: 10px;
+}
+
+/* --- Dashboard & Dossier Layout --- */
+.page-container {
+  padding: 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+/* --- Card Grid (All Cases) --- */
+.case-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+}
+
+.case-card {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  transition: transform 0.2s;
+  border-top: 4px solid #3b82f6;
+}
+
+.case-card:hover {
+  transform: translateY(-5px);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.case-id {
+  font-weight: bold;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+/* --- Status Badges --- */
+.status-badge, .status-select {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-badge.open, .status-select.open { background: #dcfce7; color: #166534; }
+.status-badge.closed, .status-select.closed { background: #fee2e2; color: #991b1b; }
+.status-badge.pending, .status-select.pending { background: #fef3c7; color: #92400e; }
+
+/* --- Dossier Layout --- */
+.dossier-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 50/50 split */
+  gap: 40px;
+}
+
+.detail-card {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-bottom: 20px;
+}
+
+/* --- Evidence QR Cards --- */
+.evidence-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 15px;
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+  align-items: center;
+}
+
+.qr-img {
+  width: 80px;
+  height: 80px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+}
+
+.link-btn {
+  display: inline-block;
+  margin-top: 5px;
+  color: #3b82f6;
+  font-size: 0.9rem;
+  text-decoration: none;
 }
 
 /* --- 4. Inputs & Rows (The Spacing Fix) --- */

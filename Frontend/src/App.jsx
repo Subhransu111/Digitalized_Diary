@@ -6,6 +6,8 @@ import Home from './pages/Home';
 import Dashboard from './pages/Dashboard'; // Import Dashboard
 import './App.css';
 import CreateCase from './pages/CreateCase';
+import CasesList from './pages/CasesList';
+import CaseDetails from './pages/CaseDetails';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -39,6 +41,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <CreateCase />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/cases" 
+            element={
+              <ProtectedRoute>
+                <CasesList />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/cases/:id" 
+            element={
+              <ProtectedRoute>
+                <CaseDetails />
               </ProtectedRoute>
             } 
           />
