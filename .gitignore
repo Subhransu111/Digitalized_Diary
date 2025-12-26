@@ -1,0 +1,13 @@
+# --- ROOT / BACKEND .gitignore ---
+
+# Dependencies
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
