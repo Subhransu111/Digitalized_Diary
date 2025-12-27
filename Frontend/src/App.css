@@ -532,6 +532,61 @@ body {
   margin-bottom: 20px;
 }
 
+/* --- MOBILE RESPONSIVENESS --- */
+
+/* Triggers only on screens smaller than 768px (Tablets & Phones) */
+@media (max-width: 768px) {
+
+    /* 1. Make the main card width 95% of the screen */
+    .form-card.wide-card {
+        width: 95%;
+        padding: 15px;
+        margin: 10px auto;
+    }
+
+    /* 2. Turn all "Rows" into "Columns" */
+    .row {
+        display: flex;
+        flex-direction: column; /* Stacks items vertically */
+        gap: 15px; /* Adds space between stacked items */
+    }
+
+    /* 3. Reset widths so inputs take full width */
+    .input-group, 
+    .input-group.flex-1, 
+    .input-group.flex-2 {
+        width: 100%;
+        min-width: 100%;
+        flex: none;
+    }
+
+    /* 4. Fix the Stepper (The 1-2-3 circles) */
+    .stepper-container {
+        width: 100%;
+        overflow-x: auto; /* Allow scrolling if it gets too tight */
+        padding-bottom: 10px;
+    }
+    
+    .step span {
+        font-size: 12px; /* Smaller text for "Details", "People" */
+        display: none; /* Optional: Hide text entirely on very small phones */
+    }
+
+    /* 5. Fix Buttons */
+    .clean-add-btn, 
+    .clean-submit-btn {
+        width: 100%; /* Full width buttons are easier to tap */
+        margin-top: 10px;
+    }
+    
+    /* 6. Adjust Tables if you have them */
+    table {
+        display: block;
+        overflow-x: auto; /* Horizontal scroll for data tables */
+        white-space: nowrap;
+    }
+}
+
 /* --- Evidence QR Cards --- */
 .evidence-card {
   background: white;
