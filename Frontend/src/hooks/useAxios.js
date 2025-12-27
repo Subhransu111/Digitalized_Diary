@@ -7,7 +7,7 @@ const useAxios = () => {
 
   const api = useMemo(() => {
     const instance = axios.create({
-      baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api/v1", // Your Backend URL
+      baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1", // Your Backend URL
     });
 
     // INTERCEPTOR: This runs before every request
