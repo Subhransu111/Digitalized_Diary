@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import useAxios from '../hooks/useAxios';
 import { 
   PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer,
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line
+  BarChart, Bar, XAxis, YAxis, CartesianGrid
 } from 'recharts';
 import '../App.css';
 
@@ -12,7 +12,7 @@ const Dashboard = () => {
   // State matches your Backend Response structure
   const [stats, setStats] = useState({
     totalCases: 0,
-    pendingCount: 0, // Note: Backend logic counts "Open" cases here
+    pendingCount: 0,
     closedCount: 0,
     pendencyRate: '0%'
   });
@@ -20,22 +20,33 @@ const Dashboard = () => {
   const [timelineData, setTimelineData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const COLORS = ['#10b981', '#ef4444', '#f59e0b']; // Green, Red, Yellow
+  const COLORS = ['#10b981', '#ef4444', '#f59e0b']; 
 
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
-        // 1. Fetch KPI Stats
-        // Make sure this route matches your backend setup
+        // --- 1. Fetch KPI Stats ---
         const statsRes = await api.get('/analytics/stats');
         if(statsRes.data.success) {
             setStats(statsRes.data.data);
         }
 
-        // 2. Fetch Timeline Data (New Feature!)
+        // --- 2. Fetch Timeline Data ---
         const timelineRes = await api.get('/analytics/timeline');
         if(timelineRes.data.success) {
             setTimelineData(timelineRes.data.data);
+        }
+
+        // --- 3. (NEW) Check for Stagnant Cases / Reminders ---
+        // This runs silently in the background
+        try {
+            const reminderRes = await api.get('/analytics/reminders');
+            if (reminderRes.data.success && reminderRes.data.count > 0) {
+                // Trigger the popup if cases are overdue (older than 10 days)
+                alert(`⚠️ ACTION REQUIRED\n\nYou have ${reminderRes.data.count} active cases that have been open for more than 10 days.\n\nPlease review the "Active Investigations" list.`);
+            }
+        } catch (reminderError) {
+            console.warn("Reminder check failed silently:", reminderError);
         }
 
       } catch (error) {
@@ -48,7 +59,7 @@ const Dashboard = () => {
     fetchAnalytics();
   }, [api]);
 
-  // Prepare Pie Chart Data from Stats
+  // Prepare Pie Chart Data
   const pieData = [
     { name: 'Open / Pending', value: stats.pendingCount },
     { name: 'Closed', value: stats.closedCount }
@@ -58,9 +69,9 @@ const Dashboard = () => {
 
   return (
     <div className="page-container">
-      <h2 style={{ marginBottom: '30px' }}>📊 Investigation Analytics</h2>
+      <h2 className="page-title">📊 Investigation Analytics</h2>
 
-      {/* --- SECTION 1: KPI CARDS (From Backend) --- */}
+      {/* --- SECTION 1: KPI CARDS --- */}
       <div className="dashboard-grid">
         
         {/* Total Cases */}
@@ -72,11 +83,10 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Pendency Rate (Calculated by Backend) */}
+        {/* Pendency Rate */}
         <div className="stat-card">
           <div className="stat-icon" style={{ background: '#ffedd5', color: '#c2410c' }}>⚠️</div>
           <div>
-            {/* Display the percentage string directly from backend */}
             <h3>{stats.pendencyRate}</h3> 
             <p>Pendency Rate</p>
           </div>
@@ -104,7 +114,7 @@ const Dashboard = () => {
       {/* --- SECTION 2: CHARTS --- */}
       <div className="charts-container">
         
-        {/* CHART 1: Status Distribution (Pie) */}
+        {/* Chart 1: Status Pie */}
         <div className="chart-card">
           <h3>Case Status Overview</h3>
           <div style={{ width: '100%', height: 300 }}>
@@ -120,8 +130,8 @@ const Dashboard = () => {
                   paddingAngle={5}
                   dataKey="value"
                 >
-                  <Cell fill="#ef4444" /> {/* Red for Open */}
-                  <Cell fill="#10b981" /> {/* Green for Closed */}
+                  <Cell fill="#ef4444" />
+                  <Cell fill="#10b981" />
                 </Pie>
                 <Tooltip />
                 <Legend verticalAlign="bottom" height={36}/>
@@ -130,8 +140,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* CHART 2: Resolution Timeline (Bar) - NEW! */}
-        {/* Uses getFIRtoChargeSheetTimeline data */}
+        {/* Chart 2: Efficiency Bar */}
         <div className="chart-card">
           <h3>⚡ Efficiency: Days to Close Case</h3>
           <div style={{ width: '100%', height: 300 }}>

@@ -34,7 +34,7 @@ async function getCaseStatistics(req,res){
 
     async function getFIRtoChargeSheetTimeline(req,res){
         try{
-            // Find closed cases - case insensitive query
+            
             const closedCases = await Case.find({caseStatus: "Closed"}).select('caseNumber caseTitle createdAt updatedAt');
 
             const timelineData = closedCases.map(c=>{
@@ -68,8 +68,35 @@ async function getCaseStatistics(req,res){
                 error:error.message,
             });
         }
-    }
+        };
+
+        async function checkDeadlines(req,res){
+            try{
+                const delay = new Date();
+                delay.setDate(delay.getDate() - 10); //10 days ago
+                const overdueCases = await Case.find({
+                    caseStatus: "Open",
+                    createdAt: {$lte: delay},
+                }).select('caseNumber caseTitle createdAt caseStatus');
+                return res.status(200).json({
+                    success:true,
+                    Count: overdueCases.length,
+                    reminder: overdueCases,
+                });
+                
+
+            }
+            catch(error){
+                return res.status(500).json({
+                    success:false,
+                    error:error.message,
+                });
+            };
+        };
+    
+    
     module.exports = {
         getCaseStatistics,
         getFIRtoChargeSheetTimeline,
+        checkDeadlines,
     };
