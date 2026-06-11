@@ -1,4 +1,3 @@
-import React from 'react';
 import CTASection from '../components/CTASection';
 import FeatureSection from '../components/FeatureSection';
 import Footer from '../components/Footer';

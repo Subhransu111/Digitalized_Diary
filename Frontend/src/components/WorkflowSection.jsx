@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import aboutImage from '../assets/hero-image-4-1.webp';
 import { fadeIn } from '../utils/motion';

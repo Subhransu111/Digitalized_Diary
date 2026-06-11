@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { useAuth0 } from '@auth0/auth0-react';
 import { fadeUp, staggerContainer } from '../utils/motion';

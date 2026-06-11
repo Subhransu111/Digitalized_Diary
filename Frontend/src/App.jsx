@@ -1,8 +1,7 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth0 } from "@auth0/auth0-react"; // Import Auth0
 import Navbar from './components/Navbar';
-import Home from './pages/Home';
+import LandingPage from './pages/LandingPage';
 import Dashboard from './pages/Dashboard'; // Import Dashboard
 import './App.css';
 import CreateCase from './pages/CreateCase';
@@ -25,7 +24,7 @@ function App() {
       <div className="App">
         <Navbar />
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<LandingPage />} />
           
           {/* Protect the Dashboard Route */}
           <Route 
