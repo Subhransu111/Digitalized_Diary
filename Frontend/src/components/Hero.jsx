@@ -2,6 +2,10 @@ import { motion } from 'framer-motion';
 import { useAuth0 } from '@auth0/auth0-react';
 import { fadeUp, staggerContainer } from '../utils/motion';
 
+const MotionDiv = motion.div;
+const MotionH1 = motion.h1;
+const MotionP = motion.p;
+
 const Hero = () => {
   const { loginWithRedirect, isAuthenticated } = useAuth0();
 
@@ -14,22 +18,22 @@ const Hero = () => {
       <div className="hero-overlay" />
       <div className="hero-glow" />
 
-      <motion.div
+      <MotionDiv
         variants={staggerContainer(0.2, 0.1)}
         initial="hidden"
         animate="show"
         className="hero-content"
       >
-        <motion.h1 variants={fadeUp}>
+        <MotionH1 variants={fadeUp}>
           Digital Evidence Management System
-        </motion.h1>
+        </MotionH1>
 
-        <motion.p variants={fadeUp}>
+        <MotionP variants={fadeUp}>
           Securely record investigation data, manage digital evidence,
           and track case progress with automated analytics.
-        </motion.p>
+        </MotionP>
 
-        <motion.div variants={fadeUp} className="hero-buttons">
+        <MotionDiv variants={fadeUp} className="hero-buttons">
           {!isAuthenticated && (
             <button type="button" onClick={() => loginWithRedirect()} className="primary-btn">
               Get Started
@@ -38,8 +42,8 @@ const Hero = () => {
           <button type="button" className="secondary-btn" onClick={scrollToAbout}>
             Learn More
           </button>
-        </motion.div>
-      </motion.div>
+        </MotionDiv>
+      </MotionDiv>
     </header>
   );
 };

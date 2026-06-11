@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import { scaleIn } from '../utils/motion';
 
+const MotionDiv = motion.div;
+
 const CTASection = () => {
   return (
     <section className="cta-wrapper" id="contact">
@@ -8,7 +10,7 @@ const CTASection = () => {
       <div className="cta-glow-core" />
 
       <div className="cta-container">
-        <motion.div
+        <MotionDiv
           variants={scaleIn}
           initial="hidden"
           whileInView="show"
@@ -19,7 +21,7 @@ const CTASection = () => {
             Join the police departments already using Cyber Diary to solve cases faster.
           </p>
           <button type="button" className="contact-btn">Contact Sales Team</button>
-        </motion.div>
+        </MotionDiv>
       </div>
     </section>
   );

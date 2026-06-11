@@ -2,11 +2,13 @@ import { motion } from 'framer-motion';
 import aboutImage from '../assets/hero-image-4-1.webp';
 import { fadeIn } from '../utils/motion';
 
+const MotionDiv = motion.div;
+
 const WorkflowSection = () => {
   return (
     <section className="about-wrapper" id="about">
       <div className="about-content-container">
-        <motion.div
+        <MotionDiv
           variants={fadeIn('right', 'tween', 0.1, 1)}
           initial="hidden"
           whileInView="show"
@@ -14,9 +16,9 @@ const WorkflowSection = () => {
           className="about-img-frame"
         >
           <img src={aboutImage} alt="About Cyber Diary" className="about-img-element" />
-        </motion.div>
+        </MotionDiv>
 
-        <motion.div
+        <MotionDiv
           variants={fadeIn('left', 'tween', 0.1, 1)}
           initial="hidden"
           whileInView="show"
@@ -43,7 +45,7 @@ const WorkflowSection = () => {
               <p>Data Integrity</p>
             </div>
           </div>
-        </motion.div>
+        </MotionDiv>
       </div>
     </section>
   );

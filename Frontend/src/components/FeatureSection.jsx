@@ -1,6 +1,10 @@
 import { motion } from 'framer-motion';
 import { fadeUp, staggerContainer } from '../utils/motion';
 
+const MotionArticle = motion.article;
+const MotionDiv = motion.div;
+const MotionH2 = motion.h2;
+
 const features = [
   {
     iconClass: 'feature-icon-case',
@@ -25,16 +29,16 @@ const FeatureSection = () => {
       <div className="features-overlay" />
 
       <div className="features-container">
-        <motion.h2
+        <MotionH2
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.25 }}
           transition={{ duration: 0.8 }}
         >
           Our Core Features
-        </motion.h2>
+        </MotionH2>
 
-        <motion.div
+        <MotionDiv
           variants={staggerContainer(0.15, 0)}
           initial="hidden"
           whileInView="show"
@@ -42,13 +46,13 @@ const FeatureSection = () => {
           className="features-grid"
         >
           {features.map((feature) => (
-            <motion.article key={feature.title} variants={fadeUp} className="feature-glass-card">
+            <MotionArticle key={feature.title} variants={fadeUp} className="feature-glass-card">
               <div className={`feature-icon-wrapper ${feature.iconClass}`} aria-hidden="true" />
               <h3>{feature.title}</h3>
               <p>{feature.description}</p>
-            </motion.article>
+            </MotionArticle>
           ))}
-        </motion.div>
+        </MotionDiv>
       </div>
     </section>
   );
