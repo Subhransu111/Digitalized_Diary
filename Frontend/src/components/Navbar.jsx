@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth0 } from "@auth0/auth0-react";
 import '../App.css';
@@ -8,23 +8,42 @@ const Navbar = () => {
   const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const scrolledRef = useRef(false);
   const location = useLocation();
   const navigate = useNavigate();
   const isLandingPage = location.pathname === '/';
 
   useEffect(() => {
     if (!isLandingPage) {
+      scrolledRef.current = false;
       setScrolled(false);
       return undefined;
     }
 
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
+    let frameId = 0;
+
+    const updateScrolledState = () => {
+      frameId = 0;
+      const nextScrolled = window.scrollY > 50;
+
+      if (scrolledRef.current !== nextScrolled) {
+        scrolledRef.current = nextScrolled;
+        setScrolled(nextScrolled);
+      }
     };
 
-    handleScroll();
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const handleScroll = () => {
+      if (frameId) return;
+      frameId = window.requestAnimationFrame(updateScrolledState);
+    };
+
+    updateScrolledState();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      if (frameId) window.cancelAnimationFrame(frameId);
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, [isLandingPage]);
 
   // Scroll Handler (Same as before)
