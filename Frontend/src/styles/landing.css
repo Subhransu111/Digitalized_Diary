@@ -46,18 +46,16 @@
   width: 100%;
   z-index: 1000;
   padding: 1.25rem 2rem !important;
-  background: rgba(5, 5, 5, 0.45) !important;
+  background: rgba(5, 5, 5, 0.82) !important;
   border-bottom: 1px solid var(--landing-border) !important;
   box-shadow: none !important;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: background 0.25s ease, border-color 0.25s ease;
+  transform: translateZ(0);
 }
 
 .navbar-landing.scrolled {
-  background: rgba(5, 5, 5, 0.84) !important;
+  background: rgba(5, 5, 5, 0.94) !important;
   border-bottom-color: rgba(255, 90, 31, 0.18) !important;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5) !important;
 }
 
 .navbar-landing .navbar-brand h1 {
@@ -220,6 +218,14 @@
   border-bottom: 1px solid var(--landing-border);
 }
 
+.landing-page-scope .features-wrapper,
+.landing-page-scope .about-wrapper,
+.landing-page-scope .cta-wrapper,
+.landing-page-scope .landing-footer {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 700px;
+}
+
 .landing-page-scope .features-overlay {
   position: absolute;
   inset: 0;
@@ -256,14 +262,14 @@
 .landing-page-scope .feature-glass-card {
   min-height: 258px;
   padding: 40px 30px;
-  background: rgba(15, 15, 15, 0.48);
+  background: rgba(15, 15, 15, 0.82);
   border: 1px solid var(--landing-border);
   border-radius: 8px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(8px);
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
     border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
     box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
 }
 
 .landing-page-scope .feature-glass-card:hover {
