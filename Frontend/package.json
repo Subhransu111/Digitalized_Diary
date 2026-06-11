@@ -12,7 +12,11 @@
   "proxy": "http://localhost:8000",
   "dependencies": {
     "@auth0/auth0-react": "^2.11.0",
+    "@fontsource/inter": "^5.2.8",
+    "@fontsource/playfair-display": "^5.2.8",
+    "@studio-freight/lenis": "^1.0.42",
     "axios": "^1.13.2",
+    "framer-motion": "^12.40.0",
     "html2pdf.js": "^0.12.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
