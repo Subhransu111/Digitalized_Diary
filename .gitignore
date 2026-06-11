@@ -1,7 +1,7 @@
 # --- ROOT / BACKEND .gitignore ---
-
+.env
 # Dependencies
-node_modules/
+node_modules
 
 # Logs
 npm-debug.log*
