@@ -1,13 +1,31 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth0 } from "@auth0/auth0-react";
 import '../App.css';
+import '../styles/landing.css';
 
 const Navbar = () => {
   const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const isLandingPage = location.pathname === '/';
+
+  useEffect(() => {
+    if (!isLandingPage) {
+      setScrolled(false);
+      return undefined;
+    }
+
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isLandingPage]);
 
   // Scroll Handler (Same as before)
   const scrollToSection = (sectionId) => {
@@ -24,7 +42,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="navbar">
+    <nav className={`navbar ${isLandingPage ? `navbar-landing ${scrolled ? 'scrolled' : ''}` : ''}`}>
       <div className="navbar-brand">
         {/* The Brand/Logo acts as 'Home' */}
         <h1 onClick={() => navigate('/')} style={{cursor:'pointer'}}>
@@ -40,12 +58,12 @@ const Navbar = () => {
            ========================================= */}
         {!isAuthenticated && (
           <>
-            <button onClick={() => scrollToSection('features')} className="nav-item clean-btn">Features</button>
-            <button onClick={() => scrollToSection('about')} className="nav-item clean-btn">About Us</button>
-            <button onClick={() => scrollToSection('contact')} className="nav-item clean-btn">Contact</button>
+            <button type="button" onClick={() => scrollToSection('features')} className="nav-item clean-btn">Features</button>
+            <button type="button" onClick={() => scrollToSection('about')} className="nav-item clean-btn">About Us</button>
+            <button type="button" onClick={() => scrollToSection('contact')} className="nav-item clean-btn">Contact</button>
             
             {/* Login / Signup Buttons */}
-            <button onClick={() => loginWithRedirect()} className="nav-btn login-btn" style={{marginLeft: '20px'}}>Login</button>
+            <button type="button" onClick={() => loginWithRedirect()} className="nav-btn login-btn" style={{marginLeft: '20px'}}>Login</button>
             
           </>
         )}
@@ -86,6 +104,7 @@ const Navbar = () => {
                 Hi, {user?.given_name || user?.nickname || "Officer"}
               </span>
               <button 
+                type="button"
                 onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })} 
                 className="nav-btn"
                 style={{background: '#ef4444', color: 'white', border: 'none', cursor: 'pointer'}}

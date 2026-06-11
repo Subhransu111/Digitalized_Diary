@@ -70,7 +70,7 @@ const CreateCase = () => {
             await api.post('/evidencelogs/validate', validationData, {
               headers: { 'Content-Type': 'multipart/form-data' }
             });
-          } catch (validateError) {
+          } catch {
             // IF UNSAFE: We throw an error immediately.
             // Result: The code below never runs. NO data goes to the DB.
             throw new Error(`Security Risk: '${log.file.name}' is not allowed.`);
