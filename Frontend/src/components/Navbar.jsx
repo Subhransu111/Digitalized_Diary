@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion as Motion } from 'framer-motion';
 import FeaturesDropdown from './FeaturesDropdown';
 import useClickOutside from '../hooks/useClickOutside';
 
@@ -176,7 +176,7 @@ const Navbar = () => {
 
         <AnimatePresence>
           {mobileMenuOpen && (
-            <motion.div
+            <Motion.div
               variants={mobileMenuVariants}
               initial="hidden"
               animate="visible"
@@ -245,7 +245,7 @@ const Navbar = () => {
 
                     <AnimatePresence>
                       {mobileFeaturesOpen && (
-                        <motion.div
+                        <Motion.div
                           initial={{ height: 0, opacity: 0 }}
                           animate={{ height: 'auto', opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}
@@ -260,7 +260,7 @@ const Navbar = () => {
                             <span className="item-icon">#</span>
                             <span>View All Cases</span>
                           </Link>
-                        </motion.div>
+                        </Motion.div>
                       )}
                     </AnimatePresence>
                   </div>
@@ -277,7 +277,7 @@ const Navbar = () => {
                   </div>
                 </div>
               )}
-            </motion.div>
+            </Motion.div>
           )}
         </AnimatePresence>
       </div>

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 
 const menuVariants = {
   hidden: { opacity: 0, x: '-50%', y: -10, scale: 0.98 },
@@ -23,7 +23,7 @@ const FeaturesDropdown = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <motion.div
+    <Motion.div
       variants={menuVariants}
       initial="hidden"
       animate="visible"
@@ -39,7 +39,7 @@ const FeaturesDropdown = ({ isOpen, onClose }) => {
         <span className="item-icon">#</span>
         <span>View All Cases</span>
       </Link>
-    </motion.div>
+    </Motion.div>
   );
 };
 

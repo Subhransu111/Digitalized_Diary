@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 
 const pageVariants = {
   initial: {
@@ -24,7 +24,7 @@ const pageTransition = {
 };
 
 const PageTransition = ({ children }) => (
-  <motion.div
+  <Motion.div
     variants={pageVariants}
     initial="initial"
     animate="animate"
@@ -33,7 +33,7 @@ const PageTransition = ({ children }) => (
     className="page-transition-wrapper"
   >
     {children}
-  </motion.div>
+  </Motion.div>
 );
 
 export default PageTransition;
