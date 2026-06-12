@@ -91,17 +91,23 @@
   margin-left: 8px !important;
   margin-right: 0 !important;
   padding: 8px 20px !important;
-  color: #ffffff !important;
-  background-color: var(--landing-orange) !important;
-  border: 1px solid var(--landing-orange) !important;
+  color: var(--landing-orange) !important;
+  background-color: rgba(255, 90, 31, 0.1) !important;
+  border: 1px solid rgba(255, 90, 31, 0.2) !important;
   border-radius: 8px !important;
   font-weight: 600 !important;
-  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    color 0.3s ease !important;
 }
 
 .navbar-landing .login-btn:hover {
+  color: #ffffff !important;
+  background-color: var(--landing-orange) !important;
+  border-color: var(--landing-orange) !important;
   box-shadow: 0 0 15px var(--landing-orange-soft);
-  transform: translateY(-1px);
 }
 
 .landing-page-scope .primary-btn,

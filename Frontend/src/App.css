@@ -197,8 +197,9 @@ body {
 }
 
 .login-btn {
-  background-color: #0ea5e9;
-  color: white;
+  background-color: rgba(255, 90, 31, 0.1);
+  border: 1px solid rgba(255, 90, 31, 0.2);
+  color: #ff5a1f;
   font-weight: bold;
   padding: 10px 20px;
   margin-right: 5vh;
@@ -206,7 +207,10 @@ body {
 }
 
 .login-btn:hover {
-  background-color: #0284c7;
+  background-color: #ff5a1f;
+  border-color: #ff5a1f;
+  color: #ffffff;
+  box-shadow: 0 0 15px rgba(255, 90, 31, 0.3);
 }
 
 
