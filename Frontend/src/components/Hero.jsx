@@ -13,6 +13,10 @@ const Hero = () => {
     document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const handleLogin = () => {
+    loginWithRedirect({ appState: { returnTo: '/dashboard' } });
+  };
+
   return (
     <header className="hero-wrapper" id="home">
       <div className="hero-overlay" />
@@ -35,7 +39,7 @@ const Hero = () => {
 
         <MotionDiv variants={fadeUp} className="hero-buttons">
           {!isAuthenticated && (
-            <button type="button" onClick={() => loginWithRedirect()} className="primary-btn">
+            <button type="button" onClick={handleLogin} className="primary-btn">
               Get Started
             </button>
           )}

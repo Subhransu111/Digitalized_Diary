@@ -4,6 +4,9 @@ import aboutImage from '../assets/hero-image-4-1.webp'
 
 const Home = () => {
   const { loginWithRedirect, isAuthenticated } = useAuth0();
+  const handleLogin = () => {
+    loginWithRedirect({ appState: { returnTo: '/dashboard' } });
+  };
 
   return (
     <div className="home-container">
@@ -17,7 +20,7 @@ const Home = () => {
         </p>
         <div className="hero-buttons">
           {!isAuthenticated && (
-            <button onClick={() => loginWithRedirect()} className="primary-btn">Get Started</button>
+            <button onClick={handleLogin} className="primary-btn">Get Started</button>
           )}
           <button className="secondary-btn" onClick={() => document.getElementById('about').scrollIntoView()}>Learn More</button>
         </div>

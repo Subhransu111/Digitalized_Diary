@@ -90,6 +90,10 @@ const Navbar = () => {
     }, 150);
   };
 
+  const handleLogin = () => {
+    loginWithRedirect({ appState: { returnTo: '/dashboard' } });
+  };
+
   const handleLogout = () => {
     logout({ logoutParams: { returnTo: window.location.origin } });
   };
@@ -118,7 +122,7 @@ const Navbar = () => {
               <button type="button" onClick={() => scrollToSection('contact')} className="nav-item clean-btn">
                 Contact
               </button>
-              <button type="button" onClick={() => loginWithRedirect()} className="nav-btn login-btn">
+              <button type="button" onClick={handleLogin} className="nav-btn login-btn">
                 Login
               </button>
             </>
@@ -218,7 +222,7 @@ const Navbar = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      loginWithRedirect();
+                      handleLogin();
                       setMobileMenuOpen(false);
                     }}
                     className="mobile-nav-btn login-btn"
