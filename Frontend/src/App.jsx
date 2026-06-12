@@ -9,7 +9,6 @@ import Dashboard from './pages/Dashboard';
 import CreateCase from './pages/CreateCase';
 import CasesList from './pages/CasesList';
 import CaseDetails from './pages/CaseDetails';
-import useLenis from './hooks/useLenis';
 
 import './App.css';
 import './styles/theme.css';
@@ -87,8 +86,6 @@ const AnimatedRoutes = () => {
 };
 
 function App() {
-  useLenis();
-
   return (
     <Router>
       <div className="App">

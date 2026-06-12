@@ -1,3 +1,7 @@
+const loadEnv = require('./utils/loadEnv');
+
+loadEnv();
+
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 8000;
@@ -35,12 +39,18 @@ app.use(cors({
 
 app.use(express.json());
 
-// --- FIX 2: Vercel "Serverless" Middleware ---
-// This connects to the DB *before* every request. 
-// Vercel pauses servers, so we need to reconnect when they wake up.
-app.use(async (req, res, next) => {
+// Health check
+app.get('/health', (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: "Server is running",
+        timestamp: new Date()
+    });
+});
+
+// Connect before API requests. Deployment env vars still take precedence over local .env values.
+const requireDatabase = async (req, res, next) => {
     try {
-        // Use the Environment Variable (NOT localhost!)
         const dbUrl = process.env.MONGO_URI; 
         
         if (!dbUrl) {
@@ -53,24 +63,16 @@ app.use(async (req, res, next) => {
         console.error("Database Connection Failed:", error);
         res.status(500).json({ error: "Database Connection Error" });
     }
-});
+};
 
 // --- Routes ---
+app.use('/api/v1', requireDatabase);
 app.use('/api/v1/cases', checkJwt, caseRoute);
 app.use('/api/v1/casefacts', checkJwt, caseFactRoute);
 app.use('/api/v1/witnesses', checkJwt, witnessRoute);
 app.use('/api/v1/seizures', checkJwt, seizureRoute);
 app.use('/api/v1/evidencelogs', checkJwt, evidenceLogRoute);
 app.use('/api/v1/analytics', checkJwt, analyticsRoute);
-
-// Health check
-app.get('/health', (req, res) => {
-    res.status(200).json({
-        success: true,
-        message: "Server is running",
-        timestamp: new Date()
-    });
-});
 
 // Vercel Start Command
 if (require.main === module) {
