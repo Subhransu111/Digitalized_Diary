@@ -39,12 +39,16 @@ body,
 
 html {
   scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 *,
 *::before,
 *::after {
   box-sizing: inherit;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 body {
@@ -81,21 +85,9 @@ a {
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--bg);
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 90, 31, 0.34);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--orange);
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .App {
