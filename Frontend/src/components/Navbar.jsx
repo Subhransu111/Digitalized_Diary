@@ -1,35 +1,52 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth0 } from "@auth0/auth0-react";
-import '../App.css';
-import '../styles/landing.css';
+import { useAuth0 } from '@auth0/auth0-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import FeaturesDropdown from './FeaturesDropdown';
+import useClickOutside from '../hooks/useClickOutside';
+
+const mobileMenuVariants = {
+  hidden: { opacity: 0, y: -16, scale: 0.98 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.3, ease: 'easeOut' },
+  },
+  exit: {
+    opacity: 0,
+    y: -16,
+    scale: 0.98,
+    transition: { duration: 0.2, ease: 'easeIn' },
+  },
+};
 
 const Navbar = () => {
   const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [desktopDropdownOpen, setDesktopDropdownOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileFeaturesOpen, setMobileFeaturesOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const scrolledRef = useRef(false);
+
   const location = useLocation();
   const navigate = useNavigate();
+  const navRef = useRef(null);
   const isLandingPage = location.pathname === '/';
 
-  useEffect(() => {
-    if (!isLandingPage) {
-      scrolledRef.current = false;
-      setScrolled(false);
-      return undefined;
-    }
+  const closeAllMenus = useCallback(() => {
+    setDesktopDropdownOpen(false);
+    setMobileMenuOpen(false);
+    setMobileFeaturesOpen(false);
+  }, []);
 
+  useClickOutside(navRef, closeAllMenus);
+
+  useEffect(() => {
     let frameId = 0;
 
     const updateScrolledState = () => {
       frameId = 0;
-      const nextScrolled = window.scrollY > 50;
-
-      if (scrolledRef.current !== nextScrolled) {
-        scrolledRef.current = nextScrolled;
-        setScrolled(nextScrolled);
-      }
+      setScrolled(window.scrollY > 50);
     };
 
     const handleScroll = () => {
@@ -44,96 +61,225 @@ const Navbar = () => {
       if (frameId) window.cancelAnimationFrame(frameId);
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [isLandingPage]);
+  }, []);
 
-  // Scroll Handler (Same as before)
+  useEffect(() => {
+    closeAllMenus();
+  }, [closeAllMenus, location.pathname]);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        closeAllMenus();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [closeAllMenus]);
+
   const scrollToSection = (sectionId) => {
     if (location.pathname === '/') {
-      const element = document.getElementById(sectionId);
-      if (element) element.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      navigate('/');
-      setTimeout(() => {
-        const element = document.getElementById(sectionId);
-        if (element) element.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+      return;
     }
+
+    navigate('/');
+    window.setTimeout(() => {
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+    }, 150);
   };
 
+  const handleLogout = () => {
+    logout({ logoutParams: { returnTo: window.location.origin } });
+  };
+
+  const officerName = user?.given_name || user?.nickname || 'Officer';
+  const navbarClassName = `navbar ${scrolled || !isLandingPage ? 'scrolled' : ''} ${
+    !isLandingPage ? 'navbar-internal' : ''
+  }`;
+
   return (
-    <nav className={`navbar ${isLandingPage ? `navbar-landing ${scrolled ? 'scrolled' : ''}` : ''}`}>
-      <div className="navbar-brand">
-        {/* The Brand/Logo acts as 'Home' */}
-        <h1 onClick={() => navigate('/')} style={{cursor:'pointer'}}>
-          CYBER DIARY
-        </h1>
-      </div>
-      
-      <div className="navbar-links">
-        
-        {/* =========================================
-            SCENARIO 1: LOGGED OUT (Public Visitor)
-            Shows: Features, About, Contact, Login
-           ========================================= */}
-        {!isAuthenticated && (
-          <>
-            <button type="button" onClick={() => scrollToSection('features')} className="nav-item clean-btn">Features</button>
-            <button type="button" onClick={() => scrollToSection('about')} className="nav-item clean-btn">About Us</button>
-            <button type="button" onClick={() => scrollToSection('contact')} className="nav-item clean-btn">Contact</button>
-            
-            {/* Login / Signup Buttons */}
-            <button type="button" onClick={() => loginWithRedirect()} className="nav-btn login-btn" style={{marginLeft: '20px'}}>Login</button>
-            
-          </>
-        )}
+    <nav ref={navRef} className={navbarClassName}>
+      <div className="navbar-container">
+        <div className="navbar-brand">
+          <h1 onClick={() => navigate('/')}>CYBER DIARY</h1>
+        </div>
 
-        {/* =========================================
-            SCENARIO 2: LOGGED IN (Officer Mode)
-            Shows: Home, Actions, Dashboard, User, Logout
-           ========================================= */}
-        {isAuthenticated && (
-          <>
-            {/* 1. Home Link (Explicit) */}
-            <Link to="/" className="nav-item">Home</Link>
-
-            {/* 2. Actions Dropdown */}
-            <div 
-              className="dropdown-container"
-              onMouseEnter={() => setDropdownOpen(true)}
-              onMouseLeave={() => setDropdownOpen(false)}
-            >
-              <span className="nav-item dropdown-trigger">
+        <div className="desktop-nav">
+          {!isAuthenticated ? (
+            <>
+              <button type="button" onClick={() => scrollToSection('features')} className="nav-item clean-btn">
                 Features
-              </span>
-              {dropdownOpen && (
-                <div className="dropdown-menu">
-                  <Link to="/create-case" className="dropdown-item">➕ New Full Case Entry</Link>
-                  <hr style={{borderColor: '#334155', margin: '5px 0'}}/>
-                  <Link to="/cases" className="dropdown-item">📂 View All Cases</Link>
+              </button>
+              <button type="button" onClick={() => scrollToSection('about')} className="nav-item clean-btn">
+                About Us
+              </button>
+              <button type="button" onClick={() => scrollToSection('contact')} className="nav-item clean-btn">
+                Contact
+              </button>
+              <button type="button" onClick={() => loginWithRedirect()} className="nav-btn login-btn">
+                Login
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/" className="nav-item">
+                Home
+              </Link>
+
+              <div
+                className="dropdown-container"
+                onMouseEnter={() => setDesktopDropdownOpen(true)}
+                onMouseLeave={() => setDesktopDropdownOpen(false)}
+              >
+                <button
+                  type="button"
+                  className={`nav-item clean-btn dropdown-trigger ${desktopDropdownOpen ? 'active' : ''}`}
+                  aria-expanded={desktopDropdownOpen}
+                  onClick={() => setDesktopDropdownOpen((open) => !open)}
+                >
+                  Features <span className="arrow-indicator">v</span>
+                </button>
+                <AnimatePresence>
+                  {desktopDropdownOpen && (
+                    <FeaturesDropdown isOpen={desktopDropdownOpen} onClose={() => setDesktopDropdownOpen(false)} />
+                  )}
+                </AnimatePresence>
+              </div>
+
+              <Link to="/dashboard" className="nav-item">
+                Dashboard
+              </Link>
+
+              <div className="user-section">
+                <span className="user-greeting">Hi, {officerName}</span>
+                <button type="button" onClick={handleLogout} className="nav-btn logout-btn">
+                  Logout
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+
+        <button
+          type="button"
+          className={`mobile-menu-button ${mobileMenuOpen ? 'active' : ''}`}
+          onClick={() => setMobileMenuOpen((open) => !open)}
+          aria-label="Toggle menu"
+          aria-expanded={mobileMenuOpen}
+        >
+          <span className="hamburger-line" />
+          <span className="hamburger-line" />
+          <span className="hamburger-line" />
+        </button>
+
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              variants={mobileMenuVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="mobile-menu-panel"
+            >
+              {!isAuthenticated ? (
+                <div className="mobile-menu-links">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      scrollToSection('features');
+                      setMobileMenuOpen(false);
+                    }}
+                    className="mobile-nav-item clean-btn"
+                  >
+                    Features
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      scrollToSection('about');
+                      setMobileMenuOpen(false);
+                    }}
+                    className="mobile-nav-item clean-btn"
+                  >
+                    About Us
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      scrollToSection('contact');
+                      setMobileMenuOpen(false);
+                    }}
+                    className="mobile-nav-item clean-btn"
+                  >
+                    Contact
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      loginWithRedirect();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="mobile-nav-btn login-btn"
+                  >
+                    Login
+                  </button>
+                </div>
+              ) : (
+                <div className="mobile-menu-links">
+                  <Link to="/" className="mobile-nav-item" onClick={() => setMobileMenuOpen(false)}>
+                    Home
+                  </Link>
+
+                  <div className="mobile-accordion">
+                    <button
+                      type="button"
+                      onClick={() => setMobileFeaturesOpen((open) => !open)}
+                      className="mobile-nav-item clean-btn"
+                      aria-expanded={mobileFeaturesOpen}
+                    >
+                      <span>Features</span>
+                      <span className={`accordion-arrow ${mobileFeaturesOpen ? 'rotate' : ''}`}>v</span>
+                    </button>
+
+                    <AnimatePresence>
+                      {mobileFeaturesOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.25 }}
+                          className="mobile-accordion-content"
+                        >
+                          <Link to="/create-case" className="mobile-sub-nav-item" onClick={() => setMobileMenuOpen(false)}>
+                            <span className="item-icon">+</span>
+                            <span>New Full Case Entry</span>
+                          </Link>
+                          <Link to="/cases" className="mobile-sub-nav-item" onClick={() => setMobileMenuOpen(false)}>
+                            <span className="item-icon">#</span>
+                            <span>View All Cases</span>
+                          </Link>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  <Link to="/dashboard" className="mobile-nav-item" onClick={() => setMobileMenuOpen(false)}>
+                    Dashboard
+                  </Link>
+
+                  <div className="mobile-user-section">
+                    <span className="mobile-user-greeting">Hi, {officerName}</span>
+                    <button type="button" onClick={handleLogout} className="mobile-nav-btn logout-btn">
+                      Logout
+                    </button>
+                  </div>
                 </div>
               )}
-            </div>
-
-            {/* 3. Dashboard */}
-            <Link to="/dashboard" className="nav-item">Dashboard</Link>
-
-            {/* 4. User Name & Logout */}
-            <div style={{display: 'flex', gap: '15px', alignItems: 'center', marginLeft:'15px'}}>
-              <span style={{color: '#cbd5e1', fontSize: '0.9rem', fontWeight:'bold'}}>
-                Hi, {user?.given_name || user?.nickname || "Officer"}
-              </span>
-              <button 
-                type="button"
-                onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })} 
-                className="nav-btn"
-                style={{background: '#ef4444', color: 'white', border: 'none', cursor: 'pointer'}}
-              >
-                Logout
-              </button>
-            </div>
-          </>
-        )}
-
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </nav>
   );
