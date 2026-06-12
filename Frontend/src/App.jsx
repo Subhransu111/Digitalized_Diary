@@ -26,6 +26,19 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
+const PublicLandingRoute = () => {
+  const { isAuthenticated, isLoading } = useAuth0();
+
+  if (isLoading) return <div className="loading-screen">Authenticating Session...</div>;
+  if (isAuthenticated) return <Navigate to="/dashboard" replace />;
+
+  return (
+    <PageTransition>
+      <LandingPage />
+    </PageTransition>
+  );
+};
+
 const AnimatedRoutes = () => {
   const location = useLocation();
 
@@ -34,11 +47,7 @@ const AnimatedRoutes = () => {
       <Routes location={location} key={location.pathname}>
         <Route
           path="/"
-          element={
-            <PageTransition>
-              <LandingPage />
-            </PageTransition>
-          }
+          element={<PublicLandingRoute />}
         />
         <Route
           path="/dashboard"
