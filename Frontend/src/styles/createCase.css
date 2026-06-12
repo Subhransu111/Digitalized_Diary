@@ -178,6 +178,11 @@
   flex: 2;
 }
 
+.create-case-quantity-field {
+  width: 90px;
+  min-width: 90px;
+}
+
 .witness-row-box,
 .create-case-dynamic-row {
   padding: 20px;
@@ -331,7 +336,8 @@
 
   .create-case-input-group,
   .create-case-flex-1,
-  .create-case-flex-2 {
+  .create-case-flex-2,
+  .create-case-quantity-field {
     width: 100%;
     min-width: 100%;
     flex: none;
