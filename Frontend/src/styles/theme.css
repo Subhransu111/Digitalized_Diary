@@ -1,0 +1,235 @@
+@import '@fontsource/playfair-display/400.css';
+@import '@fontsource/playfair-display/700.css';
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/700.css';
+
+:root {
+  --bg: #050505;
+  --bg-soft: #0b0b0d;
+  --panel: rgba(12, 12, 14, 0.78);
+  --panel-solid: #101012;
+  --text: #ffffff;
+  --muted: rgba(255, 255, 255, 0.68);
+  --muted-strong: rgba(255, 255, 255, 0.82);
+  --border: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.18);
+  --orange: #ff5a1f;
+  --orange-soft: rgba(255, 90, 31, 0.15);
+  --orange-glow: rgba(255, 90, 31, 0.25);
+  --red: #ef4444;
+  --green: #10b981;
+  --amber: #f59e0b;
+  --blue: #38bdf8;
+  --font-serif: 'Playfair Display', serif;
+  --font-sans: 'Inter', sans-serif;
+}
+
+html,
+body,
+#root {
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background: var(--bg) !important;
+  color: var(--text);
+  font-family: var(--font-sans);
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-serif);
+  letter-spacing: 0;
+}
+
+p,
+button,
+input,
+select,
+textarea,
+span,
+a {
+  font-family: var(--font-sans);
+}
+
+::selection {
+  color: #ffffff;
+  background: rgba(255, 90, 31, 0.6);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 90, 31, 0.34);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--orange);
+}
+
+.App {
+  min-height: 100vh;
+  background:
+    linear-gradient(180deg, rgba(255, 90, 31, 0.04), transparent 320px),
+    var(--bg);
+  color: var(--text);
+}
+
+.page-shell {
+  min-height: 100vh;
+  padding: 110px 24px 64px;
+  background: var(--bg);
+}
+
+.page-container {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  padding: 0;
+}
+
+.page-title {
+  margin: 0 0 40px;
+  color: var(--text);
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1.08;
+  text-align: center;
+  background: linear-gradient(135deg, #ffffff 58%, var(--orange) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.page-transition-wrapper {
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+.loading-screen,
+.error-screen {
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  padding: 96px 24px 40px;
+  background: var(--bg);
+  color: var(--muted-strong);
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.error-screen {
+  color: var(--red);
+}
+
+.btn-primary,
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 11px 20px;
+  border: 1px solid var(--orange);
+  border-radius: 8px;
+  background: var(--orange);
+  color: #ffffff;
+  box-shadow: 0 4px 20px rgba(255, 90, 31, 0.2);
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    background 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-primary:hover,
+.action-btn:hover {
+  box-shadow: 0 0 25px rgba(255, 90, 31, 0.62);
+  transform: translateY(-2px);
+}
+
+.btn-primary:disabled,
+.action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 11px 20px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    background 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.22);
+  transform: translateY(-2px);
+}
+
+.text-muted {
+  color: var(--muted);
+}
+
+.sm-text {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .page-shell {
+    padding: 96px 16px 48px;
+  }
+}
