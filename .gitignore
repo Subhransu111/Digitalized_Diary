@@ -11,3 +11,5 @@ yarn-error.log*
 # OS Generated Files
 .DS_Store
 Thumbs.db
+
+implementation_plan2.md
