@@ -18,7 +18,12 @@ const parseEnvLine = (line) => {
     return { key, value };
 };
 
-const loadEnv = (envPath = path.resolve(__dirname, '..', '.env')) => {
+const loadEnv = (options = {}) => {
+    const {
+        envPath = path.resolve(__dirname, '..', '.env'),
+        override = false,
+    } = typeof options === 'string' ? { envPath: options } : options;
+
     if (!fs.existsSync(envPath)) return;
 
     const file = fs.readFileSync(envPath, 'utf8');
@@ -28,7 +33,7 @@ const loadEnv = (envPath = path.resolve(__dirname, '..', '.env')) => {
         if (!trimmedLine || trimmedLine.startsWith('#')) return;
 
         const parsed = parseEnvLine(line);
-        if (!parsed || process.env[parsed.key] !== undefined) return;
+        if (!parsed || (!override && process.env[parsed.key] !== undefined)) return;
 
         process.env[parsed.key] = parsed.value;
     });

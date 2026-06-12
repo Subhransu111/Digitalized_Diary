@@ -1,6 +1,8 @@
 const loadEnv = require('./utils/loadEnv');
 
-loadEnv();
+loadEnv({
+    override: process.env.NODE_ENV !== 'production' && !process.env.VERCEL,
+});
 
 const express = require('express');
 const app = express();
