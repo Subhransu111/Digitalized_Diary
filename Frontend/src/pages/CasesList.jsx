@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import useAxios from '../hooks/useAxios';
+import SemanticSearch from '../components/SemanticSearch';
 
 const CasesList = () => {
   const api = useAxios();
   const [cases, setCases] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [semanticResults, setSemanticResults] = useState(null);
+  const [semanticQuery, setSemanticQuery] = useState('');
 
   useEffect(() => {
     const fetchCases = async () => {
@@ -24,6 +27,11 @@ const CasesList = () => {
 
   if (loading) return <div className="loading-screen">Loading Case Files...</div>;
 
+  const isSemanticSearch = Array.isArray(semanticResults);
+  const visibleCases = isSemanticSearch
+    ? semanticResults.map((result) => ({ ...result.case, similarityScore: result.score }))
+    : cases;
+
   return (
     <div className="page-shell">
       <div className="page-container">
@@ -34,8 +42,26 @@ const CasesList = () => {
           </Link>
         </div>
 
+        <SemanticSearch
+          api={api}
+          onSearchResults={(results, query) => {
+            setSemanticResults(results);
+            setSemanticQuery(query);
+          }}
+          onClearSearch={() => {
+            setSemanticResults(null);
+            setSemanticQuery('');
+          }}
+        />
+
+        {isSemanticSearch && (
+          <div className="semantic-search-summary">
+            {visibleCases.length} semantic match{visibleCases.length === 1 ? '' : 'es'} for "{semanticQuery}"
+          </div>
+        )}
+
         <div className="cases-grid-layout">
-          {cases.map((caseItem) => {
+          {visibleCases.map((caseItem) => {
             const caseStatus = caseItem.caseStatus || 'Pending';
             const statusClass = caseStatus.toLowerCase();
             const description = caseItem.caseDescription || 'No description recorded.';
@@ -45,7 +71,12 @@ const CasesList = () => {
                 <div>
                   <div className="cases-card-header">
                     <span className="cases-card-id">{caseItem.caseNumber || 'Unnumbered Case'}</span>
-                    <span className={`cases-status-badge ${statusClass}`}>{caseStatus}</span>
+                    <div className="cases-card-badges">
+                      {isSemanticSearch && (
+                        <span className="cases-score-badge">{Math.round(caseItem.similarityScore * 100)}% match</span>
+                      )}
+                      <span className={`cases-status-badge ${statusClass}`}>{caseStatus}</span>
+                    </div>
                   </div>
                   <h3 className="cases-card-title">{caseItem.caseTitle || 'Untitled Case'}</h3>
                   <p className="cases-card-desc">
@@ -65,7 +96,11 @@ const CasesList = () => {
             );
           })}
 
-          {cases.length === 0 && <div className="cases-empty-state">No cases found. Start a new investigation.</div>}
+          {visibleCases.length === 0 && (
+            <div className="cases-empty-state">
+              {isSemanticSearch ? 'No semantic matches found.' : 'No cases found. Start a new investigation.'}
+            </div>
+          )}
         </div>
       </div>
     </div>
