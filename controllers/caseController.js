@@ -1,6 +1,10 @@
 const Case = require('../models/Case');
+const fs = require('fs');
+const path = require('path');
 const { extractCaseDetails, generateEmbedding } = require('../services/geminiService');
 const cosineSimilarity = require('../utils/cosineSimilarity');
+
+const evidenceUploadDir = path.resolve(__dirname, '../uploads/evidence');
 
 function buildSearchText(caseNumber, caseTitle, caseDescription) {
     return [
@@ -20,12 +24,31 @@ function mapEvidenceFiles(files = []) {
     }));
 }
 
+function cleanupUploadedFiles(files = []) {
+    files.forEach((file) => {
+        if (!file?.path) return;
+
+        const resolvedPath = path.resolve(file.path);
+        const isInsideEvidenceDir =
+            resolvedPath === evidenceUploadDir || resolvedPath.startsWith(`${evidenceUploadDir}${path.sep}`);
+
+        if (!isInsideEvidenceDir) return;
+
+        try {
+            fs.unlinkSync(resolvedPath);
+        } catch (error) {
+            console.error('Failed to remove orphaned case evidence file:', error.message);
+        }
+    });
+}
+
 // Cretae a new Case
 async function createCase(req, res) {
     try {
         const { caseNumber, caseTitle, caseDescription, caseStatus, createdBy } = req.body;
 
         if (!caseNumber || !caseTitle || !caseDescription) {
+            cleanupUploadedFiles(req.files);
             return res.status(400).json({
                 success: false,
                 message: "Please provide all required fields",
@@ -60,6 +83,7 @@ async function createCase(req, res) {
 
     }
     catch (error) {
+        cleanupUploadedFiles(req.files);
         console.error("Case Creation Failed:", error);
         return res.status(500).json({
             success: false,
