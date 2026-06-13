@@ -1,6 +1,15 @@
 const { GoogleGenAI, Type } = require('@google/genai');
 
 let ai;
+const EMBEDDING_MODEL = process.env.GEMINI_EMBEDDING_MODEL || 'gemini-embedding-001';
+const DEFAULT_EMBEDDING_DIMENSIONALITY = 768;
+const parsedEmbeddingDimensionality = Number.parseInt(
+    process.env.GEMINI_EMBEDDING_DIMENSIONALITY || `${DEFAULT_EMBEDDING_DIMENSIONALITY}`,
+    10
+);
+const EMBEDDING_DIMENSIONALITY = Number.isInteger(parsedEmbeddingDimensionality) && parsedEmbeddingDimensionality > 0
+    ? parsedEmbeddingDimensionality
+    : DEFAULT_EMBEDDING_DIMENSIONALITY;
 
 try {
     if (process.env.GEMINI_API_KEY) {
@@ -116,13 +125,19 @@ Case Narration:
     }
 }
 
-async function generateEmbedding(text) {
+async function generateEmbedding(text, options = {}) {
     requireClient();
 
     try {
+        const config = {
+            taskType: options.taskType || 'SEMANTIC_SIMILARITY',
+            outputDimensionality: EMBEDDING_DIMENSIONALITY,
+        };
+
         const response = await ai.models.embedContent({
-            model: 'text-embedding-004',
+            model: EMBEDDING_MODEL,
             contents: text,
+            config,
         });
 
         if (response.embeddings?.[0]?.values) {
@@ -143,4 +158,6 @@ async function generateEmbedding(text) {
 module.exports = {
     extractCaseDetails,
     generateEmbedding,
+    EMBEDDING_MODEL,
+    EMBEDDING_DIMENSIONALITY,
 };
