@@ -12,6 +12,7 @@ const CaseDetails = () => {
   const [seizures, setSeizures] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusUpdating, setStatusUpdating] = useState(false);
+  const apiRoot = (import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1').replace(/\/api\/v1\/?$/, '');
 
   useEffect(() => {
     const fetchFullDossier = async () => {
@@ -141,6 +142,29 @@ const CaseDetails = () => {
           </div>
 
           <div className="dossier-right">
+            <div className="dossier-evidence-panel">
+              <h3>Case Evidence Files</h3>
+              <div className="evidence-grid">
+                {(caseData.evidenceFiles || []).map((file) => (
+                  <div key={file.filename} className="evidence-card">
+                    <div className="evidence-info">
+                      <span className="badge">{file.mimetype || 'File'}</span>
+                      <h4>{file.originalName || file.filename}</h4>
+                      <p className="sm-text">
+                        {file.size ? `${Math.round(file.size / 1024)} KB` : 'Size unavailable'}
+                      </p>
+                      <a href={`${apiRoot}${file.path}`} target="_blank" rel="noreferrer" className="link-btn">
+                        View File
+                      </a>
+                    </div>
+                  </div>
+                ))}
+                {(!caseData.evidenceFiles || caseData.evidenceFiles.length === 0) && (
+                  <p className="text-muted">No case evidence files uploaded.</p>
+                )}
+              </div>
+            </div>
+
             <div className="dossier-evidence-panel">
               <h3>Evidence Locker</h3>
               <div className="evidence-grid">

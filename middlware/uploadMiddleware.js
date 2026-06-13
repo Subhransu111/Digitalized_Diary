@@ -104,7 +104,11 @@ function removeUploadedFiles(files = []) {
         if (!file?.path) return;
 
         const resolvedPath = path.resolve(file.path);
-        if (!resolvedPath.startsWith(path.resolve(uploadDir))) return;
+        const resolvedUploadDir = path.resolve(uploadDir);
+        const isInsideUploadDir =
+            resolvedPath === resolvedUploadDir || resolvedPath.startsWith(`${resolvedUploadDir}${path.sep}`);
+
+        if (!isInsideUploadDir) return;
 
         try {
             fs.unlinkSync(resolvedPath);
@@ -129,12 +133,20 @@ const uploadEvidence = {
                     });
                 }
 
-                const invalidFile = (req.files || []).find((file) => !isValidSignature(file));
-                if (invalidFile) {
+                try {
+                    const invalidFile = (req.files || []).find((file) => !isValidSignature(file));
+                    if (invalidFile) {
+                        removeUploadedFiles(req.files);
+                        return res.status(400).json({
+                            success: false,
+                            message: `Security Error: File signature rejected for ${invalidFile.originalname}.`,
+                        });
+                    }
+                } catch (signatureError) {
                     removeUploadedFiles(req.files);
                     return res.status(400).json({
                         success: false,
-                        message: `Security Error: File signature rejected for ${invalidFile.originalname}.`,
+                        message: `Security Error: Upload signature validation failed. ${signatureError.message}`,
                     });
                 }
 

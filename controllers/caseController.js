@@ -1,6 +1,16 @@
 const Case = require('../models/Case');
-const { extractCaseDetails, generateEmbedding } = require('../services/geminiService');
+const fs = require('fs');
+const path = require('path');
+const {
+    extractCaseDetails,
+    generateEmbedding,
+    EMBEDDING_MODEL,
+} = require('../services/geminiService');
 const cosineSimilarity = require('../utils/cosineSimilarity');
+
+const evidenceUploadDir = path.resolve(__dirname, '../uploads/evidence');
+const CASE_EMBEDDING_TASK_TYPE = 'RETRIEVAL_DOCUMENT';
+const QUERY_EMBEDDING_TASK_TYPE = 'RETRIEVAL_QUERY';
 
 function buildSearchText(caseNumber, caseTitle, caseDescription) {
     return [
@@ -20,12 +30,31 @@ function mapEvidenceFiles(files = []) {
     }));
 }
 
+function cleanupUploadedFiles(files = []) {
+    files.forEach((file) => {
+        if (!file?.path) return;
+
+        const resolvedPath = path.resolve(file.path);
+        const isInsideEvidenceDir =
+            resolvedPath === evidenceUploadDir || resolvedPath.startsWith(`${evidenceUploadDir}${path.sep}`);
+
+        if (!isInsideEvidenceDir) return;
+
+        try {
+            fs.unlinkSync(resolvedPath);
+        } catch (error) {
+            console.error('Failed to remove orphaned case evidence file:', error.message);
+        }
+    });
+}
+
 // Cretae a new Case
 async function createCase(req, res) {
     try {
         const { caseNumber, caseTitle, caseDescription, caseStatus, createdBy } = req.body;
 
         if (!caseNumber || !caseTitle || !caseDescription) {
+            cleanupUploadedFiles(req.files);
             return res.status(400).json({
                 success: false,
                 message: "Please provide all required fields",
@@ -36,7 +65,7 @@ async function createCase(req, res) {
         let embedding = [];
 
         try {
-            embedding = await generateEmbedding(searchText);
+            embedding = await generateEmbedding(searchText, { taskType: CASE_EMBEDDING_TASK_TYPE });
         } catch (embedError) {
             console.error('Non-blocking embedding error:', embedError.message);
         }
@@ -49,6 +78,9 @@ async function createCase(req, res) {
             createdBy: createdBy || 'System',
             evidenceFiles: mapEvidenceFiles(req.files),
             embedding,
+            embeddingModel: embedding.length ? EMBEDDING_MODEL : '',
+            embeddingTaskType: embedding.length ? CASE_EMBEDDING_TASK_TYPE : '',
+            embeddingDimensions: embedding.length,
             searchText,
         });
 
@@ -60,6 +92,7 @@ async function createCase(req, res) {
 
     }
     catch (error) {
+        cleanupUploadedFiles(req.files);
         console.error("Case Creation Failed:", error);
         return res.status(500).json({
             success: false,
@@ -181,9 +214,12 @@ async function semanticSearchCases(req, res) {
             });
         }
 
-        const queryEmbedding = await generateEmbedding(query.trim());
+        const queryEmbedding = await generateEmbedding(query.trim(), { taskType: QUERY_EMBEDDING_TASK_TYPE });
         const cases = await Case.find({
             embedding: { $exists: true, $ne: [] },
+            embeddingModel: EMBEDDING_MODEL,
+            embeddingTaskType: CASE_EMBEDDING_TASK_TYPE,
+            embeddingDimensions: queryEmbedding.length,
         }).lean();
 
         const threshold = 0.45;

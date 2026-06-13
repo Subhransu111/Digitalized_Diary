@@ -15,6 +15,13 @@ const validateMongoUri = (url) => {
         );
     }
 
+    const authority = trimmedUrl.replace(/^mongodb(?:\+srv)?:\/\//, '').split(/[/?#]/)[0];
+    const rawAtCount = (authority.match(/@/g) || []).length;
+
+    if (rawAtCount > 1) {
+        throw new Error('MONGO_URI contains an unescaped @ in the username or password. Encode @ as %40 or change the database password.');
+    }
+
     let parsedUrl;
 
     try {

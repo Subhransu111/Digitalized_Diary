@@ -18,6 +18,7 @@ const seizureRoute = require('./routes/seizureRoutes');
 const evidenceLogRoute = require('./routes/evidencelogRoutes');
 const analyticsRoute = require('./routes/analyticsRoutes');
 const checkJwt = require('./middlware/auth');
+const { extractCaseData } = require('./controllers/caseController');
 
 // Import Database Connection
 const { connectDB } = require('./connect');
@@ -70,13 +71,13 @@ const requireDatabase = async (req, res, next) => {
 };
 
 // --- Routes ---
-app.use('/api/v1', requireDatabase);
-app.use('/api/v1/cases', checkJwt, caseRoute);
-app.use('/api/v1/casefacts', checkJwt, caseFactRoute);
-app.use('/api/v1/witnesses', checkJwt, witnessRoute);
-app.use('/api/v1/seizures', checkJwt, seizureRoute);
-app.use('/api/v1/evidencelogs', checkJwt, evidenceLogRoute);
-app.use('/api/v1/analytics', checkJwt, analyticsRoute);
+app.post('/api/v1/cases/extract', checkJwt, extractCaseData);
+app.use('/api/v1/cases', checkJwt, requireDatabase, caseRoute);
+app.use('/api/v1/casefacts', checkJwt, requireDatabase, caseFactRoute);
+app.use('/api/v1/witnesses', checkJwt, requireDatabase, witnessRoute);
+app.use('/api/v1/seizures', checkJwt, requireDatabase, seizureRoute);
+app.use('/api/v1/evidencelogs', checkJwt, requireDatabase, evidenceLogRoute);
+app.use('/api/v1/analytics', checkJwt, requireDatabase, analyticsRoute);
 
 // Vercel Start Command
 if (require.main === module) {

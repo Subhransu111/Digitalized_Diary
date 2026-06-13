@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const loadEnv = require('../utils/loadEnv');
 
 loadEnv({
@@ -6,7 +5,13 @@ loadEnv({
 });
 
 const Case = require('../models/Case');
-const { generateEmbedding } = require('../services/geminiService');
+const { connectDB } = require('../connect');
+const {
+    generateEmbedding,
+    EMBEDDING_MODEL,
+    EMBEDDING_DIMENSIONALITY,
+} = require('../services/geminiService');
+const CASE_EMBEDDING_TASK_TYPE = 'RETRIEVAL_DOCUMENT';
 
 function buildSearchText(caseItem) {
     return [
@@ -26,13 +31,19 @@ async function backfill() {
 
     try {
         console.log('Connecting to Database...');
-        await mongoose.connect(mongoUri);
+        await connectDB(mongoUri);
         console.log('Database connected successfully.');
 
         const casesToUpdate = await Case.find({
             $or: [
                 { embedding: { $exists: false } },
                 { embedding: { $size: 0 } },
+                { embeddingModel: { $exists: false } },
+                { embeddingModel: { $ne: EMBEDDING_MODEL } },
+                { embeddingTaskType: { $exists: false } },
+                { embeddingTaskType: { $ne: CASE_EMBEDDING_TASK_TYPE } },
+                { embeddingDimensions: { $exists: false } },
+                { embeddingDimensions: { $ne: EMBEDDING_DIMENSIONALITY } },
                 { searchText: { $exists: false } },
                 { searchText: '' },
             ],
@@ -47,8 +58,11 @@ async function backfill() {
             const searchText = buildSearchText(caseItem);
 
             try {
-                const vector = await generateEmbedding(searchText);
+                const vector = await generateEmbedding(searchText, { taskType: CASE_EMBEDDING_TASK_TYPE });
                 caseItem.embedding = vector;
+                caseItem.embeddingModel = EMBEDDING_MODEL;
+                caseItem.embeddingTaskType = CASE_EMBEDDING_TASK_TYPE;
+                caseItem.embeddingDimensions = vector.length;
                 caseItem.searchText = searchText;
                 await caseItem.save();
                 console.log(`Generated vector embedding for Case ${caseItem.caseNumber}.`);

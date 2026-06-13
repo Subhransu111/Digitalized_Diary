@@ -37,6 +37,18 @@ const caseSchema = new mongoose.Schema({
         type: [Number],
         default: [],
     },
+    embeddingModel: {
+        type: String,
+        default: '',
+    },
+    embeddingTaskType: {
+        type: String,
+        default: '',
+    },
+    embeddingDimensions: {
+        type: Number,
+        default: 0,
+    },
     searchText: {
         type: String,
         default: '',
