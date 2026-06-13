@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import useAxios from '../hooks/useAxios';
+import AICaseAssistant from '../components/AICaseAssistant';
 
 const CreateCase = () => {
   const api = useAxios();
@@ -28,6 +29,55 @@ const CreateCase = () => {
   ]);
 
   const [facts, setFacts] = useState([{ factDescription: '', factType: 'Observation' }]);
+  const [evidenceFiles, setEvidenceFiles] = useState([]);
+
+  const normalizeWitnesses = (items) =>
+    items.map((witness) => ({
+      witnessName: witness.witnessName || '',
+      phone: witness.phone || '',
+      email: witness.email || '',
+      address: witness.address || '',
+      statement: witness.statement || '',
+    }));
+
+  const normalizeSeizures = (items) =>
+    items.map((seizure) => ({
+      itemDescription: seizure.itemDescription || '',
+      quantity: Number(seizure.quantity) || 1,
+      locationSeized: seizure.locationSeized || '',
+      seizedBy: seizure.seizedBy || '',
+    }));
+
+  const normalizeFacts = (items) =>
+    items.map((fact) => ({
+      factDescription: fact.factDescription || '',
+      factType: ['Observation', 'Digital Trace', 'Suspect Action'].includes(fact.factType)
+        ? fact.factType
+        : 'Observation',
+    }));
+
+  const handleDetailsExtracted = (extracted) => {
+    setCaseData((previousData) => ({
+      ...previousData,
+      caseNumber: extracted.caseNumber || previousData.caseNumber,
+      caseTitle: extracted.caseTitle || previousData.caseTitle,
+      caseDescription: extracted.caseDescription || previousData.caseDescription,
+    }));
+
+    if (Array.isArray(extracted.witnesses) && extracted.witnesses.length) {
+      setWitnesses(normalizeWitnesses(extracted.witnesses));
+    }
+
+    if (Array.isArray(extracted.seizures) && extracted.seizures.length) {
+      setSeizures(normalizeSeizures(extracted.seizures));
+    }
+
+    if (Array.isArray(extracted.facts) && extracted.facts.length) {
+      setFacts(normalizeFacts(extracted.facts));
+    }
+
+    setMessage({ type: 'success', text: 'AI extraction completed. Review the fields before submitting.' });
+  };
 
   const handleGenericChange = (index, event, state, setState) => {
     const newData = [...state];
@@ -39,6 +89,24 @@ const CreateCase = () => {
     const newLogs = [...evidenceLogs];
     newLogs[index].file = event.target.files[0];
     setEvidenceLogs(newLogs);
+  };
+
+  const handleCaseEvidenceChange = (event) => {
+    const selectedFiles = Array.from(event.target.files || []);
+    const combinedFiles = [...evidenceFiles, ...selectedFiles];
+
+    if (combinedFiles.length > 5) {
+      setMessage({ type: 'error', text: 'A case can include up to 5 evidence files.' });
+      setEvidenceFiles(combinedFiles.slice(0, 5));
+    } else {
+      setEvidenceFiles(combinedFiles);
+    }
+
+    event.target.value = '';
+  };
+
+  const removeCaseEvidenceFile = (index) => {
+    setEvidenceFiles((currentFiles) => currentFiles.filter((_, fileIndex) => fileIndex !== index));
   };
 
   const addRow = (state, setState, emptyObj) => setState([...state, emptyObj]);
@@ -68,7 +136,16 @@ const CreateCase = () => {
       }
 
       console.log('Creating case...');
-      const caseResponse = await api.post('/cases', caseData);
+      const caseFormData = new FormData();
+      caseFormData.append('caseNumber', caseData.caseNumber);
+      caseFormData.append('caseTitle', caseData.caseTitle);
+      caseFormData.append('caseDescription', caseData.caseDescription);
+      caseFormData.append('createdBy', user?.name || 'Officer');
+      evidenceFiles.forEach((file) => {
+        caseFormData.append('evidenceFiles', file);
+      });
+
+      const caseResponse = await api.post('/cases', caseFormData);
       if (!caseResponse.data.success) throw new Error('Failed to create base case');
 
       const newCaseId = caseResponse.data.data._id;
@@ -146,6 +223,8 @@ const CreateCase = () => {
     <div className="page-shell">
       <div className="page-container">
         <h1 className="page-title">New Case Profile</h1>
+
+        <AICaseAssistant onDetailsExtracted={handleDetailsExtracted} api={api} />
 
         <div className="create-case-card">
           <div className="create-case-stepper">
@@ -365,7 +444,37 @@ const CreateCase = () => {
 
             <div className="create-case-section">
               <div className="create-case-section-header">
-                <h3 className="create-case-section-title">Evidence Uploads</h3>
+                <h3 className="create-case-section-title">Case Evidence Files</h3>
+                <label className="create-case-add-btn create-case-upload-label">
+                  + Select Files
+                  <input
+                    type="file"
+                    multiple
+                    accept=".jpg,.jpeg,.png,.webp,.pdf,.mp3,.wav,.mp4,.avi,.mov"
+                    onChange={handleCaseEvidenceChange}
+                  />
+                </label>
+              </div>
+
+              {evidenceFiles.length > 0 ? (
+                <div className="case-evidence-file-list">
+                  {evidenceFiles.map((file, index) => (
+                    <div key={`${file.name}-${file.lastModified}`} className="case-evidence-file-chip">
+                      <span>{file.name}</span>
+                      <button type="button" onClick={() => removeCaseEvidenceFile(index)} aria-label="Remove file">
+                        x
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="case-evidence-empty">No case evidence files selected.</div>
+              )}
+            </div>
+
+            <div className="create-case-section">
+              <div className="create-case-section-header">
+                <h3 className="create-case-section-title">Evidence Logs</h3>
                 <button
                   type="button"
                   onClick={() =>
