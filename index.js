@@ -8,6 +8,7 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 8000;
 const cors = require('cors');
+const path = require('path');
 
 // Import Routes
 const caseRoute = require('./routes/caseRoutes');
@@ -40,6 +41,7 @@ app.use(cors({
 }));
 
 app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Health check
 app.get('/health', (req, res) => {
