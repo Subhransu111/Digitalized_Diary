@@ -1,25 +1,25 @@
-const mongoose = require ('mongoose');
+const mongoose = require('mongoose');
 const caseSchema = new mongoose.Schema({
-    caseNumber:{
-        type:String,
-        required:true,
+    caseNumber: {
+        type: String,
+        required: true,
     },
-    caseTitle:{
-        type:String,
-        required:true,
+    caseTitle: {
+        type: String,
+        required: true,
     },
-    caseDescription:{
-        type:String,
-        required:true,
+    caseDescription: {
+        type: String,
+        required: true,
     },
-    caseStatus:{
-        type:String,
-        default:"Open",
+    caseStatus: {
+        type: String,
+        default: "Open",
     },
-    createdBy:{
-        type:String,
+    createdBy: {
+        type: String,
     },
-    
-}, {timestamps:true});
+
+}, { timestamps: true });
 
 module.exports = mongoose.model('Case', caseSchema);

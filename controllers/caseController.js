@@ -2,14 +2,14 @@ const Case = require('../models/Case');
 
 // Cretae a new Case
 async function createCase(req, res) {
-    try{
-        const {caseNumber, caseTitle, caseDescription, caseStatus} = req.body;
+    try {
+        const { caseNumber, caseTitle, caseDescription, caseStatus } = req.body;
         if (!caseNumber || !caseTitle) {
             return res.status(400).json({
                 success: false,
                 message: "Please provide all required fields",
             });
-            }
+        }
         const newCase = await Case.create({
             caseNumber,
             caseTitle,
@@ -24,7 +24,7 @@ async function createCase(req, res) {
         });
 
     }
-    catch (error){
+    catch (error) {
         return res.status(500).json({
             success: false,
             error: error.message,
@@ -34,33 +34,33 @@ async function createCase(req, res) {
 
 // Get all Cases
 
-async function getCases(req,res) {
-    try{
-    const cases = await Case.find({});
-    return res.status(200).json({
-        success: true,
-        data: cases,
-    });
+async function getCases(req, res) {
+    try {
+        const cases = await Case.find({});
+        return res.status(200).json({
+            success: true,
+            data: cases,
+        });
     }
-    catch (error){
-    return res.status(500).json({
-        success: false,
-        error: error.message,
-    });
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            error: error.message,
+        });
 
     }
 };
 
 // Get Case by id
-async function getCaseById(req,res) {
-    try{
+async function getCaseById(req, res) {
+    try {
         const caseId = req.params.id;
-        const caseData = await Case.find({_id: caseId});
+        const caseData = await Case.find({ _id: caseId });
         return res.status(200).json({
             success: true,
             data: caseData,
         });
-    } catch (error){
+    } catch (error) {
         return res.status(500).json({
             success: false,
             error: error.message,
@@ -70,31 +70,31 @@ async function getCaseById(req,res) {
 
 }
 
-async function updateCaseStatus(req,res){
-    try{
-        const {id} = req.params;
-        const {caseStatus} = req.body;
+async function updateCaseStatus(req, res) {
+    try {
+        const { id } = req.params;
+        const { caseStatus } = req.body;
         const updatedCase = await Case.findByIdAndUpdate(
             id,
-            {caseStatus},
-            {new:true}
+            { caseStatus },
+            { new: true }
         );
-        if(!updatedCase){
+        if (!updatedCase) {
             return res.status(404).json({
-                success:false,
-                message:"Case not found",
+                success: false,
+                message: "Case not found",
             });
         }
         return res.status(200).json({
-            success:true,
-            message:"Case status updated successfully",
-            data:updatedCase,
+            success: true,
+            message: "Case status updated successfully",
+            data: updatedCase,
         });
     }
-    catch(error){
+    catch (error) {
         return res.status(500).json({
-            success:false,
-            error:error.message,
+            success: false,
+            error: error.message,
         });
     }
 };
