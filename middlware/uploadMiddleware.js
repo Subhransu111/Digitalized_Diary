@@ -1,11 +1,14 @@
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 const multer = require('multer');
 
-const uploadDir = path.join(__dirname, '../uploads/evidence');
+const uploadDir = process.env.VERCEL
+  ? path.join(os.tmpdir(), 'uploads', 'evidence')
+  : path.join(__dirname, '../uploads/evidence');
 
 if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
+  fs.mkdirSync(uploadDir, { recursive: true });
 }
 
 const allowedTypes = {
